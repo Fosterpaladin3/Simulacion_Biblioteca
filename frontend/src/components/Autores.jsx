@@ -1,184 +1,207 @@
+// src/components/Autores.jsx
 import { useState, useEffect } from "react";
 import api from "../api/api";
 
-export default function Autores() {
-    // Estados para crear
-    const [nombre, setNombre] = useState("");
-    const [nacionalidad, setNacionalidad] = useState("");
+function Autores() {
+  // Estados para crear
+  const [nombre, setNombre] = useState("");
+  const [nacionalidad, setNacionalidad] = useState("");
 
-    // Estados para listar
-    const [autores, setAutores] = useState([]);
+  // Listado
+  const [autores, setAutores] = useState([]);
 
-    // Estado para edición
-    const [editando, setEditando] = useState(null);
-    const [editNombre, setEditNombre] = useState("");
-    const [editNacionalidad, setEditNacionalidad] = useState("");
+  // Edición
+  const [editando, setEditando] = useState(null);
+  const [editNombre, setEditNombre] = useState("");
+  const [editNacionalidad, setEditNacionalidad] = useState("");
 
-    // Cargar datos al iniciar
-    useEffect(() => {
-        cargarAutores();
-    }, []);
+  useEffect(() => {
+    cargarAutores();
+  }, []);
 
-    const cargarAutores = async () => {
-        try {
-            const resp = await api.get("/autores/");
-            // El backend devuelve objetos con la propiedad `id_autor`
-            setAutores(resp.data);
-        } catch (error) {
-            console.log("Error al cargar autores", error);
-        }
-    };
+  const cargarAutores = async () => {
+    try {
+      const res = await api.get("/autores/");
+      setAutores(res.data);
+    } catch (error) {
+      console.error(error);
+      alert("Error al cargar autores");
+    }
+  };
 
-    // Crear autor
-    const crearAutor = async () => {
-        try {
-            await api.post("/autores/", {
-                nombre,
-                nacionalidad,
-            });
+  const crearAutor = async () => {
+    if (!nombre.trim()) {
+      alert("El nombre es obligatorio");
+      return;
+    }
+    try {
+      await api.post("/autores/", {
+        nombre,
+        nacionalidad,
+      });
+      alert("Autor creado correctamente");
+      setNombre("");
+      setNacionalidad("");
+      cargarAutores();
+    } catch (error) {
+      console.error(error);
+      alert("Error al crear autor: " + (error.response?.data?.detail || ""));
+    }
+  };
 
-            alert("Autor creado correctamente");
+  const eliminarAutor = async (id_autor) => {
+    if (!window.confirm("¿Eliminar autor? Esta acción no se puede deshacer.")) return;
+    try {
+      await api.delete(`/autores/${id_autor}`);
+      alert("Autor eliminado");
+      cargarAutores();
+    } catch (error) {
+      console.error(error);
+      alert("Error al eliminar autor");
+    }
+  };
 
-            setNombre("");
-            setNacionalidad("");
+  const activarEdicion = (a) => {
+    setEditando(a.id_autor);
+    setEditNombre(a.nombre ?? "");
+    setEditNacionalidad(a.nacionalidad ?? "");
+  };
 
-            cargarAutores();
-        } catch (error) {
-            alert("Error al crear autor");
-        }
-    };
+  const cancelarEdicion = () => {
+    setEditando(null);
+  };
 
-    // Eliminar autor
-    const eliminarAutor = async (id_autor) => {
-        try {
-            await api.delete(`/autores/${id_autor}`);
-            alert("Autor eliminado");
-            cargarAutores();
-        } catch (error) {
-            alert("Error al eliminar autor");
-        }
-    };
+  const actualizarAutor = async () => {
+    if (!editNombre.trim()) {
+      alert("El nombre es obligatorio");
+      return;
+    }
+    try {
+      await api.put(`/autores/${editando}`, {
+        nombre: editNombre,
+        nacionalidad: editNacionalidad,
+      });
+      alert("Autor actualizado");
+      setEditando(null);
+      cargarAutores();
+    } catch (error) {
+      console.error(error);
+      alert("Error al actualizar autor: " + (error.response?.data?.detail || ""));
+    }
+  };
 
-    // Activar modo edición
-    const activarEdicion = (aut) => {
-        setEditando(aut.id_autor);
-        setEditNombre(aut.nombre);
-        setEditNacionalidad(aut.nacionalidad);
-    };
+  return (
+    <div style={{ display: "grid", gap: 20 }}>
+      {/* Crear Autor */}
+      <div className="card">
+        <h3 style={{ marginBottom: 12 }}>Crear Autor</h3>
 
-    // Guardar edición
-    const actualizarAutor = async () => {
-        try {
-            await api.put(`/autores/${editando}`, {
-                nombre: editNombre,
-                nacionalidad: editNacionalidad,
-            });
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div>
+            <label>Nombre:</label>
+            <input
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              style={{ width: "100%", padding: 8, borderRadius: 8 }}
+              placeholder="Nombre del autor"
+            />
+          </div>
 
-            alert("Autor actualizado");
-            setEditando(null);
-            cargarAutores();
-        } catch (error) {
-            alert("Error al actualizar autor");
-        }
-    };
-
-    return (
-        <div>
-            <h2>Crear Autor</h2>
-
-            {/* FORMULARIO CREAR */}
-            <div>
-                <label>Nombre:</label><br />
-                <input
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
-                /><br /><br />
-
-                <label>Nacionalidad:</label><br />
-                <input
-                    value={nacionalidad}
-                    onChange={(e) => setNacionalidad(e.target.value)}
-                /><br /><br />
-
-                <button onClick={crearAutor}>Guardar</button>
-            </div>
-
-            <hr />
-
-            {/* LISTADO */}
-            <h2>Listado de Autores</h2>
-
-            <table border="1" cellPadding="10">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Nacionalidad</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {autores.map((aut) => (
-                        <tr key={aut.id_autor}>
-                            <td>{aut.id_autor}</td>
-
-                            {/* NOMBRE */}
-                            <td>
-                                {editando === aut.id_autor ? (
-                                    <input
-                                        value={editNombre}
-                                        onChange={(e) => setEditNombre(e.target.value)}
-                                    />
-                                ) : (
-                                    aut.nombre
-                                )}
-                            </td>
-
-                            {/* NACIONALIDAD */}
-                            <td>
-                                {editando === aut.id_autor ? (
-                                    <input
-                                        value={editNacionalidad}
-                                        onChange={(e) => setEditNacionalidad(e.target.value)}
-                                    />
-                                ) : (
-                                    aut.nacionalidad
-                                )}
-                            </td>
-
-                            {/* BOTONES */}
-                            <td>
-                                {editando === aut.id_autor ? (
-                                    <>
-                                        <button onClick={actualizarAutor}>
-                                            Guardar
-                                        </button>
-
-                                        <button onClick={() => setEditando(null)}>
-                                            Cancelar
-                                        </button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <button onClick={() => activarEdicion(aut)}>
-                                            Editar
-                                        </button>
-
-                                        <button
-                                            onClick={() => eliminarAutor(aut.id_autor)}
-                                            style={{ color: "red", marginLeft: "10px" }}
-                                        >
-                                            Eliminar
-                                        </button>
-                                    </>
-                                )}
-                            </td>
-
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+          <div>
+            <label>Nacionalidad:</label>
+            <input
+              value={nacionalidad}
+              onChange={(e) => setNacionalidad(e.target.value)}
+              style={{ width: "100%", padding: 8, borderRadius: 8 }}
+              placeholder="E.g. Colombia"
+            />
+          </div>
         </div>
-    );
+
+        <div style={{ marginTop: 12 }}>
+          <button className="btn btn-primary" onClick={crearAutor}>
+            Guardar
+          </button>
+        </div>
+      </div>
+
+      {/* Listado de Autores */}
+      <div className="card">
+        <h3 style={{ marginBottom: 12 }}>Listado de Autores</h3>
+
+        <table className="table" style={{ width: "100%" }}>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Nacionalidad</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {autores.map((a) => (
+              <tr key={a.id_autor}>
+                <td>{a.id_autor}</td>
+
+                {/* Nombre */}
+                <td>
+                  {editando === a.id_autor ? (
+                    <input value={editNombre} onChange={(e) => setEditNombre(e.target.value)} />
+                  ) : (
+                    a.nombre
+                  )}
+                </td>
+
+                {/* Nacionalidad */}
+                <td>
+                  {editando === a.id_autor ? (
+                    <input value={editNacionalidad} onChange={(e) => setEditNacionalidad(e.target.value)} />
+                  ) : (
+                    a.nacionalidad ?? "-"
+                  )}
+                </td>
+
+                <td>
+                  {editando === a.id_autor ? (
+                    <>
+                      <button className="btn btn-primary" onClick={actualizarAutor}>
+                        Guardar
+                      </button>
+                      <button className="btn" style={{ marginLeft: 8 }} onClick={cancelarEdicion}>
+                        Cancelar
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button className="btn" onClick={() => activarEdicion(a)}>
+                        Editar
+                      </button>
+                      <button
+                        className="btn btn-danger"
+                        style={{ marginLeft: 8 }}
+                        onClick={() => eliminarAutor(a.id_autor)}
+                      >
+                        Eliminar
+                      </button>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
+
+            {autores.length === 0 && (
+              <tr>
+                <td colSpan="4" style={{ textAlign: "center" }}>
+                  No hay autores registrados
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 }
+
+export default Autores;

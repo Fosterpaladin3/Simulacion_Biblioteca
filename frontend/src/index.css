@@ -1,13 +1,212 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+:root{
+  --bg: #e9ecff;               /* lila suave de fondo */
+  --sidebar-bg: #ffffff;       /* fondo sidebar */
+  --accent-green: #0f9d58;     /* verde principal (saldo) */
+  --accent-green-dark: #0b7a44;
+  --accent-orange: #f16b2a;    /* naranja tarjeta */
+  --card-bg: #ffffff;
+  --muted: #7b7f87;
+  --text: #0f1724;
+  --primary: #136f63;          /* verde secundario */
+  --shadow: 0 8px 20px rgba(15,23,36,0.06);
+  --radius-lg: 14px;
+  --radius-md: 10px;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Reset básico */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body,#root{height:100%}
+body{
+  background: var(--bg);
+  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  font-size:14px;
+}
+
+/* Layout principal: sidebar + area content */
+.app-layout{
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height:100vh;
+  gap: 0;
+}
+
+/* Sidebar */
+.sidebar{
+  background: var(--sidebar-bg);
+  border-right: 1px solid rgba(15,23,36,0.04);
+  padding: 28px 20px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  box-shadow: none;
+}
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-weight:700;
+  color:var(--primary);
+  margin-bottom: 24px;
+}
+.logo .dot{
+  width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--accent-green),#2fb07a);
+  box-shadow: var(--shadow);
+}
+
+/* Sidebar menu */
+.menu{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.menu a{
+  text-decoration:none;
+  color: #1f2937;
+  padding:12px 10px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:500;
+}
+.menu a.active, .menu a:hover{
+  background: linear-gradient(90deg, rgba(9,128,98,0.08), rgba(9,128,98,0.03));
+  color: var(--primary);
+  box-shadow: none;
+}
+
+/* Sign out area bottom */
+.sidebar .bottom{
+  margin-top: 24px;
+  color: #e11d48;
+  font-weight:600;
+}
+
+/* Top header (barra superior) */
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 18px 28px;
+  background: transparent;
+}
+.header .badge{
+  background:#e6fff4;
+  color:var(--accent-green-dark);
+  padding:8px 14px;
+  border-radius:999px;
+  font-weight:600;
+  box-shadow:none;
+}
+
+/* Content area */
+.content{
+  padding: 18px 28px 40px 28px;
+}
+
+/* Dashboard grid */
+.dashboard-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap:20px;
+  align-items:start;
+  margin-top: 18px;
+}
+
+/* Cards */
+.card{
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding:18px;
+  box-shadow: var(--shadow);
+  min-height: 120px;
+}
+
+/* Big hero cards (saldo / ahorro) */
+.hero{
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  color: #fff;
+  padding: 22px;
+  min-height:140px;
+  border-radius: var(--radius-lg);
+}
+.hero.green{
+  background: linear-gradient(135deg, var(--accent-green), var(--accent-green-dark));
+}
+.hero.orange{
+  background: linear-gradient(135deg, var(--accent-orange), #e04f06);
+}
+.hero .title{
+  font-size:13px;
+  opacity:0.9;
+}
+.hero .amount{
+  font-size:28px;
+  font-weight:800;
+  margin-top:8px;
+}
+
+/* Small info cards */
+.info-row{
+  display:flex;
+  gap:20px;
+  margin-top: 20px;
+}
+.card .card-title{
+  font-weight:700;
+  margin-bottom:8px;
+}
+.progress{
+  height:10px;
+  background:#f1f1f3;
+  border-radius:999px;
+  overflow:hidden;
+}
+
+/* Table básica */
+.table{
+  width:100%;
+  border-collapse:collapse;
+  background: transparent;
+}
+.table th, .table td{
+  padding:12px 10px;
+  text-align:left;
+  border-bottom:1px solid rgba(15,23,36,0.05);
+}
+.table thead th{
+  font-weight:700;
+  color:var(--muted);
+  background:transparent;
+}
+
+/* Botones */
+.btn{
+  border:0;
+  padding:8px 12px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+}
+.btn-primary{
+  background:var(--primary);
+  color:#fff;
+}
+.btn-danger{
+  background:#ffe9e9;
+  color:#e11d48;
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .app-layout{grid-template-columns: 1fr}
+  .sidebar{display:none;}
+  .dashboard-grid{grid-template-columns: 1fr}
 }

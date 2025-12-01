@@ -1,3 +1,4 @@
+// src/components/Libros.jsx (adaptado a los nuevos estilos)
 import { useState, useEffect } from "react";
 import api from "../api/api";
 
@@ -19,7 +20,7 @@ function Libros() {
   const [libros, setLibros] = useState([]);
 
   // Edición
-  const [editando, setEditando] = useState(null); // id_libro en edición
+  const [editando, setEditando] = useState(null);
   const [editTitulo, setEditTitulo] = useState("");
   const [editIdAutor, setEditIdAutor] = useState("");
   const [editIdGenero, setEditIdGenero] = useState("");
@@ -51,7 +52,6 @@ function Libros() {
     }
   };
 
-  // Crear libro
   const crearLibro = async () => {
     try {
       await api.post("/libros/", {
@@ -64,7 +64,6 @@ function Libros() {
         disponible: Boolean(disponible)
       });
       alert("Libro creado correctamente");
-      // reset
       setTitulo("");
       setIdAutor("");
       setIdGenero("");
@@ -79,9 +78,8 @@ function Libros() {
     }
   };
 
-  // Eliminar libro
   const eliminarLibro = async (id_libro) => {
-    if (!confirm("¿Eliminar libro? Esta acción no se puede deshacer.")) return;
+    if (!window.confirm("¿Eliminar libro? Esta acción no se puede deshacer.")) return;
     try {
       await api.delete(`/libros/${id_libro}`);
       alert("Libro eliminado");
@@ -92,7 +90,6 @@ function Libros() {
     }
   };
 
-  // Activar edición
   const activarEdicion = (l) => {
     setEditando(l.id_libro);
     setEditTitulo(l.titulo ?? "");
@@ -104,12 +101,10 @@ function Libros() {
     setEditDisponible(Boolean(l.disponible));
   };
 
-  // Cancelar edición
   const cancelarEdicion = () => {
     setEditando(null);
   };
 
-  // Actualizar libro
   const actualizarLibro = async () => {
     try {
       await api.put(`/libros/${editando}`, {
@@ -130,7 +125,6 @@ function Libros() {
     }
   };
 
-  // Buscar por título (usa /libros/buscar/titulo/{titulo})
   const buscarPorTitulo = async () => {
     if (!termBusqueda.trim()) {
       cargarDatos();
@@ -146,184 +140,196 @@ function Libros() {
   };
 
   return (
-    <div>
-      <h2>Crear Libro</h2>
+    <div style={{ display: "grid", gap: 20 }}>
+      {/* Formulario crear libro */}
+      <div className="card">
+        <h3 style={{ marginBottom: 12 }}>Crear Libro</h3>
 
-      <div>
-        <label>Título:</label><br />
-        <input value={titulo} onChange={(e) => setTitulo(e.target.value)} /><br /><br />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div>
+            <label>Título:</label><br />
+            <input value={titulo} onChange={(e) => setTitulo(e.target.value)} style={{ width: "100%", padding: 8, borderRadius: 8 }} />
+          </div>
 
-        <label>Autor:</label><br />
-        <select value={idAutor} onChange={(e) => setIdAutor(e.target.value)}>
-          <option value="">Seleccione</option>
-          {autores.map((a) => (
-            <option key={a.id_autor ?? a.id} value={a.id_autor ?? a.id}>
-              {a.nombre ?? a.nombre_completo ?? a.nombre_autor ?? `Autor ${a.id_autor ?? a.id}`}
-            </option>
-          ))}
-        </select><br /><br />
+          <div>
+            <label>Autor:</label><br />
+            <select value={idAutor} onChange={(e) => setIdAutor(e.target.value)} style={{ width: "100%", padding: 8, borderRadius: 8 }}>
+              <option value="">Seleccione</option>
+              {autores.map((a) => (
+                <option key={a.id_autor ?? a.id} value={a.id_autor ?? a.id}>
+                  {a.nombre ?? a.nombre_completo ?? `Autor ${a.id_autor ?? a.id}`}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <label>Género:</label><br />
-        <select value={idGenero} onChange={(e) => setIdGenero(e.target.value)}>
-          <option value="">Seleccione</option>
-          {generos.map((g) => (
-            <option key={g.id_genero ?? g.id} value={g.id_genero ?? g.id}>
-              {g.nombre ?? g.nombre_genero ?? `Género ${g.id_genero ?? g.id}`}
-            </option>
-          ))}
-        </select><br /><br />
+          <div>
+            <label>Género:</label><br />
+            <select value={idGenero} onChange={(e) => setIdGenero(e.target.value)} style={{ width: "100%", padding: 8, borderRadius: 8 }}>
+              <option value="">Seleccione</option>
+              {generos.map((g) => (
+                <option key={g.id_genero ?? g.id} value={g.id_genero ?? g.id}>
+                  {g.nombre ?? `Género ${g.id_genero ?? g.id}`}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <label>Año de publicación:</label><br />
-        <input type="number" value={anioPublicacion} onChange={(e) => setAnioPublicacion(e.target.value)} /><br /><br />
+          <div>
+            <label>Año de publicación:</label><br />
+            <input type="number" value={anioPublicacion} onChange={(e) => setAnioPublicacion(e.target.value)} style={{ width: "100%", padding: 8, borderRadius: 8 }} />
+          </div>
 
-        <label>Editorial:</label><br />
-        <input value={editorial} onChange={(e) => setEditorial(e.target.value)} /><br /><br />
+          <div>
+            <label>Editorial:</label><br />
+            <input value={editorial} onChange={(e) => setEditorial(e.target.value)} style={{ width: "100%", padding: 8, borderRadius: 8 }} />
+          </div>
 
-        <label>ISBN:</label><br />
-        <input value={isbn} onChange={(e) => setIsbn(e.target.value)} /><br /><br />
+          <div>
+            <label>ISBN:</label><br />
+            <input value={isbn} onChange={(e) => setIsbn(e.target.value)} style={{ width: "100%", padding: 8, borderRadius: 8 }} />
+          </div>
 
-        <label>
-          <input type="checkbox" checked={disponible} onChange={(e) => setDisponible(e.target.checked)} /> Disponible
-        </label><br /><br />
+          <div style={{ alignSelf: "end" }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <input type="checkbox" checked={disponible} onChange={(e) => setDisponible(e.target.checked)} />
+              Disponible
+            </label>
+          </div>
+        </div>
 
-        <button onClick={crearLibro}>Guardar</button>
+        <div style={{ marginTop: 12 }}>
+          <button className="btn btn-primary" onClick={crearLibro}>Guardar</button>
+        </div>
       </div>
 
-      <hr />
+      {/* Listado */}
+      <div className="card">
+        <h3 style={{ marginBottom: 12 }}>Listado de Libros</h3>
 
-      <h2>Listado de Libros</h2>
+        <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+          <input
+            placeholder="Buscar por título..."
+            value={termBusqueda}
+            onChange={(e) => setTermBusqueda(e.target.value)}
+            style={{ padding: 8, borderRadius: 8, flex: 1 }}
+          />
+          <button className="btn" onClick={buscarPorTitulo}>Buscar</button>
+          <button className="btn" onClick={cargarDatos}>Reset</button>
+        </div>
 
-      <div style={{ marginBottom: 12 }}>
-        <input
-          placeholder="Buscar por título..."
-          value={termBusqueda}
-          onChange={(e) => setTermBusqueda(e.target.value)}
-        />
-        <button onClick={buscarPorTitulo} style={{ marginLeft: 8 }}>Buscar</button>
-        <button onClick={cargarDatos} style={{ marginLeft: 8 }}>Reset</button>
-      </div>
-
-      <table border="1" cellPadding="8">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Título</th>
-            <th>Autor</th>
-            <th>Género</th>
-            <th>Año</th>
-            <th>Editorial</th>
-            <th>ISBN</th>
-            <th>Disponible</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {libros.map((l) => (
-            <tr key={l.id_libro}>
-              <td>{l.id_libro}</td>
-
-              {/* TÍTULO */}
-              <td>
-                {editando === l.id_libro ? (
-                  <input value={editTitulo} onChange={(e) => setEditTitulo(e.target.value)} />
-                ) : (
-                  l.titulo
-                )}
-              </td>
-
-              {/* AUTOR */}
-              <td>
-                {editando === l.id_libro ? (
-                  <select value={editIdAutor} onChange={(e) => setEditIdAutor(e.target.value)}>
-                    <option value="">Seleccione</option>
-                    {autores.map((a) => (
-                      <option key={a.id_autor ?? a.id} value={a.id_autor ?? a.id}>
-                        {a.nombre ?? a.nombre_completo}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  autores.find((a) => (a.id_autor ?? a.id) === l.id_autor)?.nombre ?? l.id_autor
-                )}
-              </td>
-
-              {/* GÉNERO */}
-              <td>
-                {editando === l.id_libro ? (
-                  <select value={editIdGenero} onChange={(e) => setEditIdGenero(e.target.value)}>
-                    <option value="">Seleccione</option>
-                    {generos.map((g) => (
-                      <option key={g.id_genero ?? g.id} value={g.id_genero ?? g.id}>
-                        {g.nombre}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  generos.find((g) => (g.id_genero ?? g.id) === l.id_genero)?.nombre ?? l.id_genero
-                )}
-              </td>
-
-              {/* AÑO */}
-              <td>
-                {editando === l.id_libro ? (
-                  <input type="number" value={editAnioPublicacion} onChange={(e) => setEditAnioPublicacion(e.target.value)} />
-                ) : (
-                  l.anio_publicacion
-                )}
-              </td>
-
-              {/* EDITORIAL */}
-              <td>
-                {editando === l.id_libro ? (
-                  <input value={editEditorial} onChange={(e) => setEditEditorial(e.target.value)} />
-                ) : (
-                  l.editorial
-                )}
-              </td>
-
-              {/* ISBN */}
-              <td>
-                {editando === l.id_libro ? (
-                  <input value={editIsbn} onChange={(e) => setEditIsbn(e.target.value)} />
-                ) : (
-                  l.ISBN
-                )}
-              </td>
-
-              {/* DISPONIBLE */}
-              <td>
-                {editando === l.id_libro ? (
-                  <input type="checkbox" checked={editDisponible} onChange={(e) => setEditDisponible(e.target.checked)} />
-                ) : (
-                  l.disponible ? "Sí" : "No"
-                )}
-              </td>
-
-              {/* ACCIONES */}
-              <td>
-                {editando === l.id_libro ? (
-                  <>
-                    <button onClick={actualizarLibro}>Guardar</button>
-                    <button onClick={cancelarEdicion} style={{ marginLeft: 8 }}>Cancelar</button>
-                  </>
-                ) : (
-                  <>
-                    <button onClick={() => activarEdicion(l)}>Editar</button>
-                    <button onClick={() => eliminarLibro(l.id_libro)} style={{ color: "red", marginLeft: 8 }}>
-                      Eliminar
-                    </button>
-                  </>
-                )}
-              </td>
-            </tr>
-          ))}
-          {libros.length === 0 && (
+        <table className="table" style={{ width: "100%" }}>
+          <thead>
             <tr>
-              <td colSpan="9" style={{ textAlign: "center" }}>No hay libros</td>
+              <th>ID</th>
+              <th>Título</th>
+              <th>Autor</th>
+              <th>Género</th>
+              <th>Año</th>
+              <th>Editorial</th>
+              <th>ISBN</th>
+              <th>Disponible</th>
+              <th>Acciones</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {libros.map((l) => (
+              <tr key={l.id_libro}>
+                <td>{l.id_libro}</td>
+
+                <td>
+                  {editando === l.id_libro ? (
+                    <input value={editTitulo} onChange={(e) => setEditTitulo(e.target.value)} />
+                  ) : (
+                    l.titulo
+                  )}
+                </td>
+
+                <td>
+                  {editando === l.id_libro ? (
+                    <select value={editIdAutor} onChange={(e) => setEditIdAutor(e.target.value)}>
+                      <option value="">Seleccione</option>
+                      {autores.map((a) => (
+                        <option key={a.id_autor ?? a.id} value={a.id_autor ?? a.id}>
+                          {a.nombre ?? a.nombre_completo}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    autores.find((a) => (a.id_autor ?? a.id) === l.id_autor)?.nombre ?? l.id_autor
+                  )}
+                </td>
+
+                <td>
+                  {editando === l.id_libro ? (
+                    <select value={editIdGenero} onChange={(e) => setEditIdGenero(e.target.value)}>
+                      <option value="">Seleccione</option>
+                      {generos.map((g) => (
+                        <option key={g.id_genero ?? g.id} value={g.id_genero ?? g.id}>
+                          {g.nombre}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    generos.find((g) => (g.id_genero ?? g.id) === l.id_genero)?.nombre ?? l.id_genero
+                  )}
+                </td>
+
+                <td>
+                  {editando === l.id_libro ? (
+                    <input type="number" value={editAnioPublicacion} onChange={(e) => setEditAnioPublicacion(e.target.value)} />
+                  ) : (
+                    l.anio_publicacion
+                  )}
+                </td>
+
+                <td>
+                  {editando === l.id_libro ? (
+                    <input value={editEditorial} onChange={(e) => setEditEditorial(e.target.value)} />
+                  ) : (
+                    l.editorial
+                  )}
+                </td>
+
+                <td>
+                  {editando === l.id_libro ? (
+                    <input value={editIsbn} onChange={(e) => setEditIsbn(e.target.value)} />
+                  ) : (
+                    l.ISBN
+                  )}
+                </td>
+
+                <td>
+                  {editando === l.id_libro ? (
+                    <input type="checkbox" checked={editDisponible} onChange={(e) => setEditDisponible(e.target.checked)} />
+                  ) : (
+                    l.disponible ? "Sí" : "No"
+                  )}
+                </td>
+
+                <td>
+                  {editando === l.id_libro ? (
+                    <>
+                      <button className="btn btn-primary" onClick={actualizarLibro}>Guardar</button>
+                      <button className="btn" onClick={cancelarEdicion} style={{ marginLeft: 8 }}>Cancelar</button>
+                    </>
+                  ) : (
+                    <>
+                      <button className="btn" onClick={() => activarEdicion(l)}>Editar</button>
+                      <button className="btn btn-danger" onClick={() => eliminarLibro(l.id_libro)} style={{ marginLeft: 8 }}>Eliminar</button>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
+            {libros.length === 0 && (
+              <tr>
+                <td colSpan="9" style={{ textAlign: "center" }}>No hay libros</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
